@@ -1,0 +1,11 @@
+[project]
+name = "error-detection-and-recovery"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "debugpy>=1.8.13",
+    "pyspark>=3.5.5",
+    "rich>=13.9.4",
+]

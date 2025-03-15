@@ -30,10 +30,21 @@ for node in critical_fail_nodes:
 
 
 def assign_tasks():
+    # Obtener nodos disponibles actuales
+    available_nodes = (
+        nodes_df.filter(col("status") == "OK")
+        .select("nodo")
+        .rdd.flatMap(lambda x: x)
+        .collect()
+    )
+
+    if not available_nodes:
+        return spark.createDataFrame([], ["id", "nodo_asignado", "latency", "estado"])
+
     tasks = [
         (
             i,
-            random.choice(list(fail_prob.keys())),
+            random.choice(available_nodes),
             random.randint(500, 5000),
             "Pendiente",
         )
@@ -80,7 +91,7 @@ def process_tasks(tasks_df):
         .rdd.flatMap(lambda x: x)
         .collect()
     )
-    if aviable_nodes:
+    if aviable_nodes and failed_tasks.count() > 0:
         reassigned_tasks = failed_tasks.count()
         tasks_df = tasks_df.withColumn(
             "nodo_asignado",
